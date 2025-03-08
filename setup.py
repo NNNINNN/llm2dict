@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='llm2dict',  # 包名，必须唯一
-    version='0.1.0',  # 版本号
+    version='0.0.1',  # 版本号
     author='NNNINNN',  # 作者名
     author_email='jianningwork@outlook.com',  # 作者邮箱
     description='Enable large language models to output structured data.',  # 包的简短描述
@@ -16,6 +16,7 @@ setup(
     url='https://github.com/NNNINNN/llm2dict',  # 项目地址
     packages=find_packages(),  # 自动查找包中的模块
     install_requires=[
+        "requests"
         # 列出依赖包
     ],  # 定义包的依赖项
     classifiers=[
