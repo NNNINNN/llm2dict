@@ -5,7 +5,8 @@ from .api import LLM_API, add_user, add_system, add_assistant
 
 
 def llm2dict(msg: list | str,
-             data_structures: str, api,
+             data_structures: str,
+             api,
              to_code_api=None,
              delay: int = None,
              re_dict_prompt_template=None) -> dict | list | bool:
