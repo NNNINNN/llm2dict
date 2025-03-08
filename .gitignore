@@ -1,0 +1,6 @@
+.idea
+.venv
+build
+dist
+llm2dict.egg-info
+llm2dict/__pycache__
