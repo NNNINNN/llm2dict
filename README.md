@@ -204,6 +204,7 @@ print(msg)
 | data | dict | 否 | 被检验的数据 |
 | schema | dict | 否 | 检验规则 |
 | allow_extra_keys | bool | 可选 | 是否把data中没有被schema检验的数据也返回 |
+
 验证数据类型：
 ```python
 data={
