@@ -1,10 +1,14 @@
 # llm2dict
+<img src=https://img.shields.io/badge/version-0.0.2-blue>
+<img src=https://img.shields.io/badge/license-MIT-green>  
 
+
+### 简介 
 **llm2dict** 通过与大型语言模型（LLM）的两次交互，将自然语言的回答自动转换为结构化的 Python **字典dict** / **列表list**。
 
 <!-- 旨在通过与大语言模型（LLM）的两次交互，将自然语言转换为结构化的 Python 字典或列表数据。这个包的核心功能是通过两次提问，第一次获取大语言模型的自然语言回答，第二次则提取特定格式的数据并将其转换为 Python 可执行的代码，最终返回结构化的数据(**dict**或**list**)。 -->
  
-### 功能特点  
+
 
 **llm2dict** 将提取格式的任务交给了 LLM 处理：
 
@@ -12,22 +16,11 @@
 - 第二次提问：让 LLM 根据第一次的回答和指定的数据结构，生成提取数据的 Python 代码。 
 - 代码执行：自动执行生成的代码，返回结构化的数据。 
 
-你只需输入问题和期望的数据结构，即可获得**关键词确定**的结构化的数据。
-
-### 优点  
-
-- 让LLM的注意力回到问题本身，而非关注数据结构
-- 返回确定的数据结构，无需手动编写提取函数
-  
-### 缺点  
-- Token消耗会变大
+你只需输入问题和期望的数据结构，即可获得**关键词确定**的结构化的数据，让LLM的注意力回到问题本身。
 
 
-### 其他  
-- 需要使用QWQ32b/deepseek-r1:671b或同等智能的模型
-- 仍有一定几率提取失败
 
-## 安装与使用  
+### 安装与使用  
 
 你可以通过以下命令安装 **llm2dict** 包：
 ```bash
@@ -36,21 +29,18 @@ pip install llm2dict
 
 **使用示例**  
 ```python
-from llm2dict import llm2dict,LLM_API,add_user,add_system
-#  调用硅基流动的LLM API: https://cloud.siliconflow.cn/models
+from llm2dict import llm2dict,LLM_API
+#  硅基流动API: https://cloud.siliconflow.cn/models
 api_key = "<修改成你的api_key>"
 url = "https://api.siliconflow.cn/v1/chat/completions"
 model_name = "Qwen/QwQ-32B"
 llm=LLM_API(api_key,model_name,url)
-llm.max_tokens=16000 #QwQ-32B 推理模型 口水比较多 max_tokens要设长一点,不然答案还没生完就中断了
-llm.max_seq_len=16000
 
-# 构建提问,[{"role": "system", "content": "设定"},{"role": "user", "content": "提问"},...]
-提问 = add_system([],"你是专业的作词语作曲家,从专业的歌曲创作角度出发思考,帮助用户完成歌曲写作")
-提问 = add_user(提问,"写关于爱情的歌，要顺口，歌词不要太多重复，可以短一点。写一下这首歌的简介（50字）。起一个歌名。为这首歌写一个吸引人的长句标题（参考小红书风格）。写5条这首歌的评论（参考网易云音乐的评论风格）")
+# 发给llm的提问
+msg = "写关于爱情的歌，要顺口，歌词不要太多重复，可以短一点。写一下这首歌的简介（50字）。起一个歌名。为这首歌写一个吸引人的长句标题（参考小红书风格）。写5条这首歌的评论（参考网易云音乐的评论风格）"
 
 #str 用文本设定返回的数据结构
-返回格式 = """
+data_structures = """
 {
     "歌名": str,
     "歌词": list,  # 每一句歌词一项,放到列表里
@@ -60,16 +50,12 @@ llm.max_seq_len=16000
 }
 """
 
-#llm2dict需要传入3个参数:
-# 1.提问(str|list), 如果是list要符合[{"role": "user", "content": "提问"},...]
-# 2.输出格式(str),
-# 3.封装好的大模型API函数,可以使用LLM_API中的send_request函数,
-#   也可以使用自己写的,但是要注意封装成: 函数(str问题) -> str回答 #只有一个参数,输入str格式的提问,输出str格式的回答
-数据 = llm2dict(提问,返回格式,llm.send_request)
-print("返回",数据)
+# 调用llm2dict函数，使llm返回结构化数据
+dict_data = llm2dict(msg,data_structures,llm.send_request)
+print("dict_data:",dict_data)
 ```  
 
-返回数据:
+返回数据：
 ```python
 {'歌名': '《心跳拼图》',
  '歌词': ['图书馆第三排的风掀动书页',
@@ -93,31 +79,53 @@ print("返回",数据)
         "在网易云听歌时旁边女生突然小声念'指纹在玻璃窗写下未完成的吻'，原来我们都在听这首"]}
 ```  
 
-#### **llm2dict()** 核心函数，使模型输出结构化数据
-```python
-llm2dict(msg, data_structures, api)
+
+
+### 项目结构
+```
+├── llm2dict/               
+│   ├── llm2dict.py     # 核心实现
+│   ├── api.py          # 大模型API
+│   ├── execute.py      # 执行生成的代码
+│   ├── prompt.py       # 生成代码的提示词模版
+│   └── validate.py     # 数据结构验证
 ```
 
-**参数**  
-- **msg** (str|list)： **提问内容**，如果是list要符合[{"role": "user", "content": "提问"},...]
-- **data_structures** (str)： **期望返回的数据结构**，用str表示，例如：`"{'歌名': str, '歌词': list, '简介': str, '标题': str, '评论': list,}"`
-- **api** (函数)： **封装好的大模型API函数**，可以使用LLM_API中的send_request，也可以使用自己写的，但是要注意封装成: 函数(str问题) -> str回答 | **入参只有一个：str格式的提问，输出str格式的回答**
--  **to_code_api** (函数)(可选)：**默认和api一样**，用于将回答转换为python代码的api模型函数
-- **delay** (int)(可选)：**默认为0**，调用api的间隔时间，单位为秒
-- **re_dict_prompt_template** (str)(可选)：用于替换生成代码的请求模板,文本中需要有2个{}{}，第一个{}会被替换为LLM第一交互的回答，第二个{}{}会被替换为期望返回的数据结构, `"原文本:{},格式:{}".format(LLM第一次交互的回答,数据结构要求data_structures)`
 
+### 代码说明
 
-#### **LLM_API**（class） 大模型API接口
+**函数名：** **llm2dict()**  
+**说明：** 核心函数，使模型输出结构化数据  
+```python
+llm2dict(msg, data_structures, api) -> dict|list|False
+```
+**传入参数：**
+| 参数名 | 类型 | 可选 | 说明 |
+|-----|-----|-----|-----|
+| msg | list/str | 否 | 向大模型发送的提问，例：[{"role": "system", "content": ""},{"role": "user", "content": ""}] |
+|data_structures|str|否| 希望返回的格式，例：<br>"{'歌名': str,<br> '歌词': list, #每一句一项<br> '简介': str,<br> '标题': str,<br> '评论': list,\|False, <br>'标题': str, <br>'评论': list\|False,}" |
+| api | function |否 | 封装好的大模型API，传入问题(str)，返回大模型生成的回答(str) | 
+| to_code_api | function | 可选 | 指定第二次交换的大模型API | 
+| delay | int | 可选 | 2次请求API的间隔时间 | 
+| to_dict_prompt_template | str | 可选 | 提示词模板，用于生成提取数据的python代码。可参考prompt.py中的dict_prompt_template | 
+
+**返回值：** **dict**/**list** | **Flase**
+
+----
+  
+**类名：** **LLM_API**  
+**说明：** 大模型接口，封装了请求大模型API的函数，支持多个平台
 ```python
 llm=LLM_API(api_key, model_name, url)
 llm.send_request("1+1等于多少?")
 ```
-**参数** 
-- **api_key** (str)：**大模型API的key**
-- **model_name** (str)：**大模型API的模型名称**
-- **url** (str)：**大模型API的完整请求url**
+**传入参数：**
+| 参数名 | 类型 | 可选 | 说明 |
+|-----|-----|-----|-----|
+| api_key | str | 否 | API平台秘钥 |
+| model_name | str | 否 | 模型名称 |
+| url | str | 否 | 完整的请求url |
 
-### 支持API平台
 **硅基流动**
 ```python
     # 硅基流动 https://cloud.siliconflow.cn/models
@@ -125,6 +133,8 @@ llm.send_request("1+1等于多少?")
     url = "https://api.siliconflow.cn/v1/chat/completions"
     model_name = "Qwen/QwQ-32B"
     llm = LLM_API(api_key=api_key, model_name=model_name, url=url)
+    llm.max_tokens = 16000 #设定最大返回token数
+    max_seq_len = 16000 #设定最大序列长度
     print(llm.send_request("1+1等于多少?"))
 ```
 
@@ -167,3 +177,111 @@ llm.send_request("1+1等于多少?")
     llm = LLM_API(api_key=api_key, model_name=model_name, url=url)
     print(llm.send_request("1+1等于多少?"))
 ```
+
+----
+**函数名：** **add_system() / add_user() / add_assistant()** 构建提问/提问上下文
+```python
+msg = []
+msg = add_system(msg, "你是AI助手")
+msg = add_user(msg, "1+1等于多少")
+msg = add_assistant(msg, "1+1等于2")
+print(msg)
+```
+返回:
+```python
+[
+    {"role": "system", "content": "你是AI助手"}, 
+    {"role": "user", "content": "1+1等于多少"}, 
+    {"role": "assistant", "content": "1+1等于2"}
+]
+```
+----
+**函数名：** **validate_and_process_nested_dict**  
+**说明：** 验证数据结构是否符合规则  
+**传入参数：**
+| 参数名 | 类型 | 可选 | 说明 |
+|-----|-----|-----|-----|
+| data | dict | 否 | 被检验的数据 |
+| schema | dict | 否 | 检验规则 |
+| allow_extra_keys | bool | 可选 | 是否把data中没有被schema检验的数据也返回 |
+验证数据类型：
+```python
+data={
+    "name":"alice",
+    "age":30.5,
+}
+schema={
+    "name":str,
+    "age":[int,float]
+}
+validate_and_process_nested_dict(data,schema)
+```
+验证成功：
+```python
+(True, {'name': 'alice', 'age': 30.5})
+```
+"age"类型不符合规则：
+```python
+data={
+    "name":"alice",
+    "age":"30.5",
+}
+schema={
+    "name":str,
+    "age":[int,float]
+}
+validate_and_process_nested_dict(data,schema)
+```
+验证失败，返回：
+```python
+(False, None)
+```
+根据schema，data缺失"address"数据：
+```python
+data={
+    "name":"alice",
+    "age":30.5,
+}
+schema={
+    "name":str,
+    "age":[int,float],
+    "address":{
+        "city": str,
+    }
+}
+validate_and_process_nested_dict(data,schema)
+```
+验证失败，返回：
+```python
+(False, None)
+```
+
+使用{'type':str,'process': lambda x: x.upper()}  
+传入的处理函数，对"city"数据做处理：
+```python
+data={
+    "name":"alice",
+    "age":30.5,
+    "address":{
+        "city":"shanghai"
+    }
+}
+schema={
+    "name":str,
+    "age":[int,float],
+    "address":{
+        "city": {'type':str,'process': lambda x: x.upper()},
+    }
+}
+validate_and_process_nested_dict(data,schema)
+```
+验证成功并处理后返回：
+```python
+(True, {'name': 'alice', 'age': 30.5, 'address': {'city': 'SHANGHAI'}})
+```
+
+----
+
+
+##### 其他  
+- 需要使用QWQ32b/deepseek-r1:671b 以上模型
