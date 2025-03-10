@@ -1,6 +1,5 @@
 # llm2dict
-<img src=https://img.shields.io/badge/version-0.0.2-blue>
-<img src=https://img.shields.io/badge/license-MIT-green>  
+![version](https://img.shields.io/badge/version-0.0.2-blue) ![license](https://img.shields.io/badge/license-MIT-green)
 
 
 ### 简介 
