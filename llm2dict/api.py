@@ -20,8 +20,8 @@ class LLM_API:
     封装符号openai请求格式的API。
     """
     def __init__(self, api_key, model_name, url,
-                 max_tokens=4096,
-                 max_seq_len=4096,
+                 max_tokens=8000,
+                 max_seq_len=8000,
                  temperature=0.7,
                  top_k=50,
                  top_p=1,
