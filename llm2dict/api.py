@@ -1,6 +1,7 @@
 import requests
 import json
 import pprint
+import re
 
 def add_system(messages: list, message):
     messages.append({"role": "system", "content": message})
@@ -98,6 +99,15 @@ class LLM_API:
                                      timeout=60 * 30,
                                      stream=True
                                      )
+
+            # for line in response.iter_lines():
+            #     if line:
+            #         decoded_line = line.decode('utf-8')
+            #         print(decoded_line)
+
+            # if response.status_code == 200:
+            #     # response_data = response.json()
+            #     print("11",response.text)
             content = ""
             for chunk in response.iter_lines(chunk_size=None):
                 if chunk:
@@ -114,7 +124,14 @@ class LLM_API:
                             if 'content' in data and data['content']:
                                 print(data['content'], end="")
                                 content += data['content']
+                    else:
+                        data = json.loads(chunk_str)
+                        if data['done'] == True:
+                            return self._extract_think_and_response(content)[0]
+                        content += data['message']['content']
+                        print(data['message']['content'], end="")
         else:
+            payload["stream"] = False
             response = requests.post(self.url,
                                      headers=self.headers,
                                      data=json.dumps(payload),
@@ -123,8 +140,14 @@ class LLM_API:
 
             if response.status_code == 200:
                 response_data = response.json()
-                pprint.pprint(response_data["choices"][0]["message"]["content"])
-                return response_data["choices"][0]["message"]["content"]
+                print(response_data)
+                if 'message' in response_data:
+                    pprint.pprint(response_data['message']["content"])
+                    response_content = self._extract_think_and_response(response_data['message']["content"])
+                    return response_content[0]
+                else:
+                    # pprint.pprint(response_data["choices"][0]["message"]["content"])
+                    return response_data["choices"][0]["message"]["content"]
             else:
                 try:
                     pprint.pprint(response.json())
@@ -133,4 +156,28 @@ class LLM_API:
                     pprint.pprint(response.text)
                 raise Exception(f"请求失败，状态码：{response.status_code}, 错误信息：{response.text}")
 
+    def _extract_think_and_response(self,text):
+        """
+        Extract the content within <think> tags and the content outside of these tags.
+        :param text: The input text to process.
+        :return: A tuple containing (thinking_content, response)
+        """
+        # Define the regex pattern
+        pattern = re.compile(r'<think>(.*?)</think>', re.DOTALL)
+
+        # Search for <think> tags
+        match = pattern.search(text)
+
+        if match:
+            # Extract the content within <think> tags
+            thinking_content = match.group(1).strip()
+            # Extract the content outside <think> tags
+            response = pattern.sub('', text).strip()
+        else:
+            # If no <think> tags are found, return an empty string for thinking_content
+            # and the original text as response
+            thinking_content = ""
+            response = text.strip()
+
+        return response,thinking_content
 
