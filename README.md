@@ -1,6 +1,8 @@
 # llm2dict
+
 <img src=https://img.shields.io/badge/version-0.0.3-blue>
 <img src=https://img.shields.io/badge/license-MIT-green>  
+
 
 
 ### 简介 
@@ -16,7 +18,7 @@
 - 第二次提问：让 LLM 根据第一次的回答和指定的数据结构，生成提取数据的 Python 代码。 
 - 代码执行：自动执行生成的代码，返回结构化的数据。 
 
-你只需输入问题和期望的数据结构，即可获得**关键词确定**的结构化的数据，让LLM的注意力回到问题本身。
+你只需输入问题和期望的数据结构，即可获得**关键词确定**的结构化的数据，**让LLM的注意力回到问题本身**。
 
 
 
@@ -203,7 +205,9 @@ print(msg)
 |-----|-----|-----|-----|
 | data | dict | 否 | 被检验的数据 |
 | schema | dict | 否 | 检验规则 |
+
 | allow_extra_keys | bool | 可选 | 是否把data中没有被schema检验的数据也返回 |  
+
 
 验证数据类型：
 ```python
