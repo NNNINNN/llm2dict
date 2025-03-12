@@ -1,9 +1,8 @@
 # llm2dict
-
+<span>
 <img src=https://img.shields.io/badge/version-0.0.3-blue>
 <img src=https://img.shields.io/badge/license-MIT-green>  
-
-
+</span>
 
 ### 简介 
 **llm2dict** 通过与大型语言模型（LLM）的两次交互，将自然语言的回答自动转换为结构化的 Python **字典dict** / **列表list**。
