@@ -1,5 +1,8 @@
 # llm2dict
-![version](https://img.shields.io/badge/version-0.0.2-blue) ![license](https://img.shields.io/badge/license-MIT-green)
+
+<img src=https://img.shields.io/badge/version-0.0.3-blue>
+<img src=https://img.shields.io/badge/license-MIT-green>  
+
 
 
 ### 简介 
@@ -195,14 +198,16 @@ print(msg)
 ]
 ```
 ----
-**函数名：** **validate_and_process_nested_dict**  
+**函数名：** **validate_dict**  
 **说明：** 验证数据结构是否符合规则  
 **传入参数：**
 | 参数名 | 类型 | 可选 | 说明 |
 |-----|-----|-----|-----|
 | data | dict | 否 | 被检验的数据 |
 | schema | dict | 否 | 检验规则 |
-| allow_extra_keys | bool | 可选 | 是否把data中没有被schema检验的数据也返回 |
+
+| allow_extra_keys | bool | 可选 | 是否把data中没有被schema检验的数据也返回 |  
+
 
 验证数据类型：
 ```python
@@ -214,7 +219,7 @@ schema={
     "name":str,
     "age":[int,float]
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证成功：
 ```python
@@ -230,7 +235,7 @@ schema={
     "name":str,
     "age":[int,float]
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证失败，返回：
 ```python
@@ -249,7 +254,7 @@ schema={
         "city": str,
     }
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证失败，返回：
 ```python
@@ -273,7 +278,7 @@ schema={
         "city": {'type':str,'process': lambda x: x.upper()},
     }
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证成功并处理后返回：
 ```python

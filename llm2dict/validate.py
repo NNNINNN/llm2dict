@@ -1,4 +1,4 @@
-def validate_and_process_nested_dict(data, schema, allow_extra_keys=False):
+def validate_dict(data, schema, allow_extra_keys=False):
     """
     这段代码的主要作用是验证一个多层嵌套字典的结构和数据类型是否符合预期的规则（由schema定义），并且在验证通过后对数据进行处理。具体功能包括：
         验证键是否存在：检查data中的键是否与schema中定义的键一致。
@@ -51,7 +51,7 @@ def validate_and_process_nested_dict(data, schema, allow_extra_keys=False):
 
             # 递归处理嵌套字典
             if isinstance(value, dict):
-                is_valid, processed_value = validate_and_process_nested_dict(value, expected, allow_extra_keys)
+                is_valid, processed_value = validate_dict(value, expected, allow_extra_keys)
                 if not is_valid:
                     return False, None
                 processed_data[key] = processed_value
