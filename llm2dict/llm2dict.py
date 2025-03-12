@@ -2,7 +2,7 @@ from .execute import exec_code
 from .prompt import dict_prompt_template
 import time
 from .api import LLM_API, add_user, add_system, add_assistant
-from .validate import validate_and_process_nested_dict
+from .validate import validate_dict
 
 
 def llm2dict(msg: list | str,

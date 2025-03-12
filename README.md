@@ -196,7 +196,7 @@ print(msg)
 ]
 ```
 ----
-**函数名：** **validate_and_process_nested_dict**  
+**函数名：** **validate_dict**  
 **说明：** 验证数据结构是否符合规则  
 **传入参数：**
 | 参数名 | 类型 | 可选 | 说明 |
@@ -215,7 +215,7 @@ schema={
     "name":str,
     "age":[int,float]
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证成功：
 ```python
@@ -231,7 +231,7 @@ schema={
     "name":str,
     "age":[int,float]
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证失败，返回：
 ```python
@@ -250,7 +250,7 @@ schema={
         "city": str,
     }
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证失败，返回：
 ```python
@@ -274,7 +274,7 @@ schema={
         "city": {'type':str,'process': lambda x: x.upper()},
     }
 }
-validate_and_process_nested_dict(data,schema)
+validate_dict(data,schema)
 ```
 验证成功并处理后返回：
 ```python

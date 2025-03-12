@@ -99,15 +99,6 @@ class LLM_API:
                                      timeout=60 * 30,
                                      stream=True
                                      )
-
-            # for line in response.iter_lines():
-            #     if line:
-            #         decoded_line = line.decode('utf-8')
-            #         print(decoded_line)
-
-            # if response.status_code == 200:
-            #     # response_data = response.json()
-            #     print("11",response.text)
             content = ""
             for chunk in response.iter_lines(chunk_size=None):
                 if chunk:
@@ -126,8 +117,9 @@ class LLM_API:
                                 content += data['content']
                     else:
                         data = json.loads(chunk_str)
-                        if data['done'] == True:
-                            return self._extract_think_and_response(content)[0]
+                        if "done" in data['done']:
+                            if data['done'] == True:
+                                return self._extract_think_and_response(content)[0]
                         content += data['message']['content']
                         print(data['message']['content'], end="")
         else:
@@ -146,7 +138,6 @@ class LLM_API:
                     response_content = self._extract_think_and_response(response_data['message']["content"])
                     return response_content[0]
                 else:
-                    # pprint.pprint(response_data["choices"][0]["message"]["content"])
                     return response_data["choices"][0]["message"]["content"]
             else:
                 try:
