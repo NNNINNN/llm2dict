@@ -3,13 +3,16 @@ import json
 import pprint
 import re
 
+
 def add_system(messages: list, message):
     messages.append({"role": "system", "content": message})
     return messages
 
+
 def add_user(messages: list, message):
     messages.append({"role": "user", "content": message})
     return messages
+
 
 def add_assistant(messages: list, message):
     messages.append({"role": "assistant", "content": message})
@@ -20,6 +23,7 @@ class LLM_API:
     """
     封装符号openai请求格式的API。
     """
+
     def __init__(self, api_key, model_name, url,
                  max_tokens=8000,
                  max_seq_len=8000,
@@ -138,7 +142,9 @@ class LLM_API:
                     response_content = self._extract_think_and_response(response_data['message']["content"])
                     return response_content[0]
                 else:
-                    return response_data["choices"][0]["message"]["content"]
+                    response_content = self._extract_think_and_response(
+                        response_data["choices"][0]["message"]["content"])
+                    return response_content[0]
             else:
                 try:
                     pprint.pprint(response.json())
@@ -147,7 +153,7 @@ class LLM_API:
                     pprint.pprint(response.text)
                 raise Exception(f"请求失败，状态码：{response.status_code}, 错误信息：{response.text}")
 
-    def _extract_think_and_response(self,text):
+    def _extract_think_and_response(self, text):
         """
         Extract the content within <think> tags and the content outside of these tags.
         :param text: The input text to process.
@@ -170,5 +176,4 @@ class LLM_API:
             thinking_content = ""
             response = text.strip()
 
-        return response,thinking_content
-
+        return response, thinking_content
